@@ -4,8 +4,10 @@ using ClubeDaLeitura.ModuloRevistas;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ClubeDaLeitura.ModuloEmpréstimos
@@ -17,15 +19,16 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
         public static string PainelEmprestimos()
         {
             Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("--------------------------------------------");
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine("============================================");
             Console.WriteLine("          CADASTRO DE EMPRÉSTIMOS");
-            Console.WriteLine("--------------------------------------------");
-            Console.WriteLine("Digite 1 para Inserir umm novo empréstimo");
+            Console.WriteLine("============================================");
+            Console.WriteLine("Digite 1 para Inserir um novo empréstimo");
             Console.WriteLine("Digite 2 para Visualizar empréstimos");
             Console.WriteLine("Digite 3 para Editar empréstimos");
             Console.WriteLine("Digite 4 para Finalizar empréstimos");
-            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("Digite 5 para Visualizar empréstimos de um mês -- NÃO IMPLEMENTADO");
+            Console.WriteLine("============================================");
             Console.WriteLine();
             Console.Write("Insira uma opção ou digite 9 PARA VOLTAR: ");
             Console.ResetColor();
@@ -58,11 +61,18 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
             {
                 Console.Title = "Finalização de Empréstimos";
                 ExcluirEmprestimos();
+            }            
+            else if (opcaoCadastroEmprestimos == "5")
+            {
+                Console.Title = "Lista de Empréstimos";
+                //EncontrarPorMes();
             }
         }
         public static void RegistrarEmprestimos()
         {
             Console.Clear();
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("Insira o id do empréstimo: ");
             int id = int.Parse(Console.ReadLine());
 
@@ -76,8 +86,15 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
             Console.Write("Insira o nome da revista: ");
             string revistaEmprestada = Console.ReadLine();
 
-            Console.Write("Insira a data que foi emprestada: ");
-            int dataEmprestimo = int.Parse(Console.ReadLine());
+            Console.Write("Insira o dia que foi emprestada: ");
+            int dia = int.Parse(Console.ReadLine());       
+            
+            Console.Write("Insira o mes que foi emprestada: ");
+            int mes = int.Parse(Console.ReadLine());            
+
+            Console.Write("Insira o ano que foi emprestada: ");
+            int ano = int.Parse(Console.ReadLine());
+            DateTime dataEmprestimo = new DateTime(ano, mes, dia);
 
             string dataDevolucao = VerificarDevolucao();
 
@@ -88,11 +105,14 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
             emprestimos.amigoEmprestou = amigoEmprestou;
             emprestimos.idRevista = idRevista;
             emprestimos.revistaEmprestada = revistaEmprestada;
+            emprestimos.ano = ano;
+            emprestimos.mes = mes;
+            emprestimos.dia = dia;
             emprestimos.dataEmprestimo = dataEmprestimo;
             emprestimos.dataDevolucao = dataDevolucao;
             listaEmprestimos.Add(emprestimos);
         }
-        public static bool VisualizarEmprestimos(bool existemEmprestimos)
+        private static bool VisualizarEmprestimos(bool existemEmprestimos)
         {
             Console.Clear();
             if (listaEmprestimos.Count == 0)
@@ -102,7 +122,7 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
                 return false;
             }
 
-            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.ForegroundColor = ConsoleColor.Magenta;
 
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
             Console.WriteLine("{0,-5} | {1,-25} | {2,-20} | {3,-8} | {4,-8}", "Id", "Nome Amigo", "Nome Revista", "Data Empréstimo", "Data Devolução");
@@ -110,7 +130,7 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
 
             foreach (Emprestimos e in listaEmprestimos)
             {
-                Console.WriteLine("{0,-5} | {1,-25} | {2,-20} | {3,-8} | {4,-8}", e.id, e.amigoEmprestou, e.revistaEmprestada, e.dataEmprestimo, e.dataDevolucao);
+                Console.WriteLine("{0,-5} | {1,-25} | {2,-20} | {3,-8} | {4,-8}", e.id, e.amigoEmprestou, e.revistaEmprestada, e.dataEmprestimo.ToShortDateString(), e.dataDevolucao);
             }
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
 
@@ -119,7 +139,7 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
 
             return true;
         }
-        public static void EditarEmprestimos()
+        private static void EditarEmprestimos()
         {
             bool existemEmprestimos = VisualizarEmprestimos(false);
 
@@ -127,7 +147,8 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
                 return;
 
             Console.WriteLine();
-
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Yellow;
             int id = EncontrarIdEmprestimo();
 
             Console.Write("Insira o nome do amigo que emprestou: ");
@@ -136,8 +157,16 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
             Console.Write("Insira o nome da revista: ");
             string revistaEmprestada = Console.ReadLine();
 
-            Console.Write("Insira a data que foi emprestada: ");
-            int dataEmprestimo = int.Parse(Console.ReadLine());
+            Console.Write("Insira o dia que foi emprestada: ");
+            int dia = int.Parse(Console.ReadLine());
+
+            Console.Write("Insira o mes que foi emprestada: ");
+            int mes = int.Parse(Console.ReadLine());
+
+            Console.Write("Insira o ano que foi emprestada: ");
+            int ano = int.Parse(Console.ReadLine());
+
+            DateTime dataEmprestimo = new DateTime(ano, mes, dia);
 
             string dataDevolucao = VerificarDevolucao();
 
@@ -145,10 +174,13 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
             emprestimos.id = id;
             emprestimos.amigoEmprestou = amigoEmprestou;
             emprestimos.revistaEmprestada = revistaEmprestada;
+            emprestimos.ano = ano;
+            emprestimos.mes = mes;
+            emprestimos.dia = dia;
             emprestimos.dataEmprestimo = dataEmprestimo;
             emprestimos.dataDevolucao = dataDevolucao;
         }
-        public static void ExcluirEmprestimos()
+        private static void ExcluirEmprestimos()
         {
 
             bool existemEmprestimos = VisualizarEmprestimos(false);
@@ -175,7 +207,7 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
             do
             {
                 Console.ResetColor();
-                Console.Write("Insira o Id do empréstimo: ");
+                Console.Write("Insira o Id do empréstimo: ", Console.ForegroundColor = ConsoleColor.Yellow);
 
                 idEmprestimo = Convert.ToInt32(Console.ReadLine());
 
@@ -188,7 +220,7 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
 
             return idEmprestimo;
         }
-        public static Emprestimos SelecionarEmprestimosComId(int id)
+        private static Emprestimos SelecionarEmprestimosComId(int id)
         {
             Emprestimos emprestimos = null;
 
@@ -210,8 +242,7 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
 
             if (devolucao == "s")
             {
-                Console.Write("Insira a data de devolução: ");
-                dataDevolucao = Console.ReadLine();
+                dataDevolucao = "Devoldido";
             }
             else if (devolucao == "n")
             {
@@ -220,5 +251,35 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
 
             return dataDevolucao;
         }
+        public static Emprestimos VerificarEmprestimos(int id)
+        {
+            Emprestimos emprestimos = null;
+
+            foreach (Emprestimos e in listaEmprestimos)
+            {
+                if (e.idAmigo == id)
+                {
+                    emprestimos = e;
+                    break;
+                }
+            }
+            return emprestimos;
+        }
+        private static Emprestimos AcharEmprestimosMes(int mes)
+        {
+            Emprestimos emprestimos = null;
+
+            foreach (Emprestimos e in listaEmprestimos)
+            {
+                if (e.mes == mes)
+                {
+                    emprestimos = e;
+                    break;
+                }
+            }
+            return emprestimos;
+        }
+
+
     }
 }

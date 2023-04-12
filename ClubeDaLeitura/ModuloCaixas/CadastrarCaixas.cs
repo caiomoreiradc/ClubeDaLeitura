@@ -12,20 +12,20 @@ namespace ClubeDaLeitura.ModuloCaixa
     {
         static int contadorCaixas = 1;
 
-        static ArrayList listaCaixas = new ArrayList();
+        private static ArrayList listaCaixas = new ArrayList();
 
         public static string PainelCaixas()
         {
             Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Cyan;   
-            Console.WriteLine("--------------------------------------------");
+            Console.ForegroundColor = ConsoleColor.Magenta;   
+            Console.WriteLine("============================================");
             Console.WriteLine("            CADASTRO DE CAIXAS");
-            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("============================================");
             Console.WriteLine("Digite 1 para Inserir uma nova caixa");
             Console.WriteLine("Digite 2 para Visualizar caixas");
             Console.WriteLine("Digite 3 para Editar caixas");
             Console.WriteLine("Digite 4 para Excluir caixas");
-            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("============================================");
             Console.WriteLine();
             Console.Write("Insira uma opção ou digite 9 PARA VOLTAR: ");
             Console.ResetColor();
@@ -60,9 +60,11 @@ namespace ClubeDaLeitura.ModuloCaixa
                 ExcluirCaixa();
             }
         }
-        public static void RegistrarCaixa()
+        private static void RegistrarCaixa()
         {
             Console.Clear();
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("Insira o id da caixa: ");
             int id = int.Parse(Console.ReadLine());    
             
@@ -78,8 +80,8 @@ namespace ClubeDaLeitura.ModuloCaixa
             caixas.cor = cor;
             caixas.etiqueta = etiqueta;
             listaCaixas.Add(caixas);
-        }        
-        public static void EditarCaixa()
+        }
+        private static void EditarCaixa()
         {
             bool existemCaixas = VisualizarCaixas(false);
 
@@ -87,7 +89,8 @@ namespace ClubeDaLeitura.ModuloCaixa
                 return;
 
             Console.WriteLine();
-
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("Insira o id da caixa que deseja editar: ");
             int id = int.Parse(Console.ReadLine());
 
@@ -102,7 +105,7 @@ namespace ClubeDaLeitura.ModuloCaixa
             caixas.cor = cor;
             caixas.etiqueta = etiqueta;
         }
-        static void ExcluirCaixa()
+        private static void ExcluirCaixa()
         {
 
             bool existemCaixas = VisualizarCaixas(false);
@@ -129,7 +132,7 @@ namespace ClubeDaLeitura.ModuloCaixa
             do
             {
                 Console.ResetColor();
-                Console.Write("Insira o Id da caixa: ");
+                Console.Write("Insira o Id da caixa: ", Console.ForegroundColor = ConsoleColor.Yellow);
 
                 idExclusao = Convert.ToInt32(Console.ReadLine());
 
@@ -142,7 +145,7 @@ namespace ClubeDaLeitura.ModuloCaixa
 
             return idExclusao;
         }
-        public static bool VisualizarCaixas(bool existemCaixas)
+        private static bool VisualizarCaixas(bool existemCaixas)
         {
             Console.Clear();
             if (listaCaixas.Count == 0)
@@ -152,7 +155,7 @@ namespace ClubeDaLeitura.ModuloCaixa
                 return false;
             }
 
-            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.ForegroundColor = ConsoleColor.Magenta;
 
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
             Console.WriteLine("{0,-5} | {1,-15} | {2,-15}", "Id", "Cor", "Etiqueta");
@@ -168,7 +171,7 @@ namespace ClubeDaLeitura.ModuloCaixa
 
             return true;
         }
-        public static Caixas SelecionarCaixaComId(int id)
+        private static Caixas SelecionarCaixaComId(int id)
         {
             Caixas caixas = null;
 
@@ -182,7 +185,7 @@ namespace ClubeDaLeitura.ModuloCaixa
             }
             return caixas;
         }
-        static void IncrementarContador()
+        private static void IncrementarContador()
         {
             contadorCaixas++;
         }

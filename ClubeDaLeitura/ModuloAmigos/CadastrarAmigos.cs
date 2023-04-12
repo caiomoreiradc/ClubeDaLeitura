@@ -1,4 +1,5 @@
 ﻿using ClubeDaLeitura.ModuloCaixa;
+using ClubeDaLeitura.ModuloEmpréstimos;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,20 +12,20 @@ namespace ClubeDaLeitura.ModuloAmigos
 {
     internal class CadastrarAmigos
     {
-        static ArrayList listaAmigos = new ArrayList();
+        private static ArrayList listaAmigos = new ArrayList();
 
         public static string PainelAmigos()
         {
             Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("--------------------------------------------");
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine("============================================");
             Console.WriteLine("            CADASTRO DE AMIGOS");
-            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("============================================");
             Console.WriteLine("Digite 1 para Inserir um(a) novo(a) amigo(a)");
             Console.WriteLine("Digite 2 para Visualizar amigos");
             Console.WriteLine("Digite 3 para Editar amigos");
             Console.WriteLine("Digite 4 para Excluir amigos");
-            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("============================================");
             Console.WriteLine();
             Console.Write("Insira uma opção ou digite 9 PARA VOLTAR: ");
             Console.ResetColor();
@@ -59,10 +60,11 @@ namespace ClubeDaLeitura.ModuloAmigos
                 ExcluirAmigos();
             }
         }
-        public static void RegistrarAmigos()
+        private static void RegistrarAmigos()
         {
             Console.Clear();
-
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("Insira o ID do(a) amigo(a): ");
             int id = int.Parse(Console.ReadLine());
 
@@ -87,7 +89,7 @@ namespace ClubeDaLeitura.ModuloAmigos
             amigos.endereco = endereco;
             listaAmigos.Add(amigos);
         }
-        public static bool VisualizarAmigos(bool existemAmigos)
+        private static bool VisualizarAmigos(bool existemAmigos)
         {
             Console.Clear();
             if (listaAmigos.Count == 0)
@@ -97,7 +99,7 @@ namespace ClubeDaLeitura.ModuloAmigos
                 return false;
             }
 
-            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.ForegroundColor = ConsoleColor.Magenta;
 
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
             Console.WriteLine("{0,-5} | {1,-20} | {2,-25} | {3,-11} | {4,-40}", "Id", "Nome", "Nome do Responsável", "Telefone", "Endereço");
@@ -114,7 +116,7 @@ namespace ClubeDaLeitura.ModuloAmigos
 
             return true;
         }
-        public static void EditarAmigos()
+        private static void EditarAmigos()
         {
             bool existemAmigos = VisualizarAmigos(false);
 
@@ -122,7 +124,8 @@ namespace ClubeDaLeitura.ModuloAmigos
                 return;
 
             Console.WriteLine();
-
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("Insira o ID do(a) amigo(a) que deseja editar: ");
             int id = int.Parse(Console.ReadLine());
 
@@ -145,7 +148,7 @@ namespace ClubeDaLeitura.ModuloAmigos
             amigos.telefone = telefone;
             amigos.endereco = endereco;
         }
-        static void ExcluirAmigos()
+        private static void ExcluirAmigos()
         {
 
             bool existemAmigos = VisualizarAmigos(false);
@@ -168,11 +171,11 @@ namespace ClubeDaLeitura.ModuloAmigos
         {
             int idExclusao;
             bool idInvalido;
-
+            bool idTemEmprestimo;
             do
             {
                 Console.ResetColor();
-                Console.Write("Insira o Id do(a) amigo(a): ");
+                Console.Write("Insira o Id do(a) amigo(a): ", Console.ForegroundColor = ConsoleColor.Yellow);
 
                 idExclusao = Convert.ToInt32(Console.ReadLine());
 
@@ -181,11 +184,16 @@ namespace ClubeDaLeitura.ModuloAmigos
                 if (idInvalido)
                     Console.WriteLine("Id do(a) amigo(a) não encontrado, tente novamente!!", Console.ForegroundColor = ConsoleColor.Red);
 
-            } while (idInvalido);
+                idTemEmprestimo = CadastrarEmprestimos.VerificarEmprestimos(idExclusao) != null; //VERIFICA 1 EMPRÉSTIMO POR AMIGO
+
+                if (idTemEmprestimo)
+                    Console.WriteLine("Este amigo já possuí um empréstimo aberto, tente novamente!!", Console.ForegroundColor = ConsoleColor.Red); //VERIFICA 1 EMPRÉSTIMO POR AMIGO
+
+            } while (idInvalido || idTemEmprestimo);
 
             return idExclusao;
         }
-        public static Amigos SelecionarAmigosComId(int id)
+        private static Amigos SelecionarAmigosComId(int id)
         {
             Amigos amigos = null;
 
@@ -199,5 +207,6 @@ namespace ClubeDaLeitura.ModuloAmigos
             }
             return amigos;
         }
+
     }
 }

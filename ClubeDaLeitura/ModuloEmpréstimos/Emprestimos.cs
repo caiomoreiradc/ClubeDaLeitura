@@ -13,7 +13,10 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
         public string amigoEmprestou;
         public int idRevista;
         public string revistaEmprestada;
-        public int dataEmprestimo;
+        public DateTime dataEmprestimo;
         public string dataDevolucao;
+        public int dia;
+        public int mes;
+        public int ano;
     }
 }
