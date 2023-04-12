@@ -18,23 +18,23 @@ namespace ClubeDaLeitura.ModuloCaixa
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;   
-            Console.WriteLine("----------------------------------------");
-            Console.WriteLine("          CADASTRO DE CAIXAS");
-            Console.WriteLine("----------------------------------------");
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("            CADASTRO DE CAIXAS");
+            Console.WriteLine("--------------------------------------------");
             Console.WriteLine("Digite 1 para Inserir uma nova caixa");
             Console.WriteLine("Digite 2 para Visualizar caixas");
             Console.WriteLine("Digite 3 para Editar caixas");
-            Console.WriteLine("----------------------------------------");
+            Console.WriteLine("Digite 4 para Excluir caixas");
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine();
+            Console.Write("Insira uma opção ou digite 9 PARA VOLTAR: ");
             Console.ResetColor();
-            //Console.WriteLine("Digite 4 para Excluir Equipamentos");
-            //Console.WriteLine("Digite v para voltar para o menu principal");
 
-            string opcao = Console.ReadLine();
+            string opcao = Console.ReadLine(); //Função retorna o valor lido na Program 
 
             return opcao;
         }
-
-        public static void CadastrarCaixa(string opcaoCadastroDasCaixas)
+        public static void CadastroCaixas(string opcaoCadastroDasCaixas)
         {
             if (opcaoCadastroDasCaixas == "1")
             {
@@ -53,6 +53,11 @@ namespace ClubeDaLeitura.ModuloCaixa
             {
                 Console.Title = "Edição de Caixas";
                 EditarCaixa();
+            }
+            else if(opcaoCadastroDasCaixas=="4") 
+            {
+                Console.Title = "Exclusão de Caixas";
+                ExcluirCaixa();
             }
         }
         public static void RegistrarCaixa()
@@ -74,9 +79,15 @@ namespace ClubeDaLeitura.ModuloCaixa
             caixas.etiqueta = etiqueta;
             listaCaixas.Add(caixas);
         }        
-
         public static void EditarCaixa()
         {
+            bool existemCaixas = VisualizarCaixas(false);
+
+            if (existemCaixas == false)
+                return;
+
+            Console.WriteLine();
+
             Console.Write("Insira o id da caixa que deseja editar: ");
             int id = int.Parse(Console.ReadLine());
 
@@ -91,32 +102,72 @@ namespace ClubeDaLeitura.ModuloCaixa
             caixas.cor = cor;
             caixas.etiqueta = etiqueta;
         }
+        static void ExcluirCaixa()
+        {
 
+            bool existemCaixas = VisualizarCaixas(false);
+
+            if (existemCaixas == false)
+                return;
+
+            Console.WriteLine();
+
+            int idExclusao = EncontrarIdCaixa();
+
+            Caixas caixa = SelecionarCaixaComId(idExclusao);
+
+            listaCaixas.Remove(caixa);
+
+            Console.WriteLine("Caixa excluída!", Console.ForegroundColor = ConsoleColor.Red);
+            Console.ReadKey();
+        }
+        public static int EncontrarIdCaixa()
+        {
+            int idExclusao;
+            bool idInvalido;
+
+            do
+            {
+                Console.ResetColor();
+                Console.Write("Insira o Id da caixa: ");
+
+                idExclusao = Convert.ToInt32(Console.ReadLine());
+
+                idInvalido = SelecionarCaixaComId(idExclusao) == null;
+
+                if (idInvalido)
+                    Console.WriteLine("Id da caixa não encontrado, tente novamente!!", Console.ForegroundColor = ConsoleColor.Red);
+
+            } while (idInvalido);
+
+            return idExclusao;
+        }
         public static bool VisualizarCaixas(bool existemCaixas)
         {
+            Console.Clear();
             if (listaCaixas.Count == 0)
             {
-                Console.WriteLine("Nenhum equipamento cadastrado!", Console.ForegroundColor = ConsoleColor.Red);
+                Console.WriteLine("Nenhuma caixa cadastrado!", Console.ForegroundColor = ConsoleColor.Red);
                 Console.ReadKey();
                 return false;
             }
 
             Console.ForegroundColor = ConsoleColor.Cyan;
 
-            Console.WriteLine("{0,-10} | {1,-40} | {2,-30}", "Id", "Cor", "Etiqueta");
-
-            Console.WriteLine("--------------------------------------------------------------------------");
+            Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
+            Console.WriteLine("{0,-5} | {1,-15} | {2,-15}", "Id", "Cor", "Etiqueta");
+            Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
 
             foreach (Caixas c in listaCaixas)
             {
-                Console.WriteLine("{0,-10} | {1,-40} | {2,-30}", c.id, c.cor, c.etiqueta);
+                Console.WriteLine("{0,-5} | {1,-15} | {2,-15}", c.id, c.cor, c.etiqueta);
             }
+            Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
 
             Console.ResetColor();
 
             return true;
         }
-
         public static Caixas SelecionarCaixaComId(int id)
         {
             Caixas caixas = null;
