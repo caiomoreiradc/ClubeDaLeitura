@@ -12,6 +12,7 @@ namespace ClubeDaLeitura.ModuloAmigos
         public string nome;
         public string nomeResponsavel;
         public double telefone;
+        public string telefoneFormatado;
         public string endereco;
     }
 }

@@ -63,21 +63,20 @@ namespace ClubeDaLeitura.ModuloAmigos
         private static void RegistrarAmigos()
         {
             Console.Clear();
-            Console.ResetColor();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write("Insira o ID do(a) amigo(a): ");
+            Program.MostrarMensagem("Insira o ID do amigo: ", ConsoleColor.Yellow);
             int id = int.Parse(Console.ReadLine());
 
-            Console.Write("Insira o nome do(a) amigo(a): ");
+            Program.MostrarMensagem("Insira o nome do amigo: ", ConsoleColor.Yellow);
             string nome = Console.ReadLine();
 
-            Console.Write("Insira o nome do(a) responsável: ");
+            Program.MostrarMensagem("Insira o nome do responsável: ", ConsoleColor.Yellow);
             string nomeResponsavel = Console.ReadLine();
 
-            Console.Write("Insira o telefone do(a) amigo(a): ");
+            Program.MostrarMensagem("Insira o telefone do amigo: ", ConsoleColor.Yellow);
             double telefone = double.Parse(Console.ReadLine());
+            string telefoneFormatado = Convert.ToInt64(telefone).ToString(@"(00)00000-0000"); //FORMATA O TELEFONE
 
-            Console.Write("Insira o endereço do(a) amigo(a): ");
+            Program.MostrarMensagem("Insira o endereço do amigo: ", ConsoleColor.Yellow);
             string endereco = Console.ReadLine();
 
             Amigos amigos = new Amigos();
@@ -86,6 +85,7 @@ namespace ClubeDaLeitura.ModuloAmigos
             amigos.nome = nome;
             amigos.nomeResponsavel = nomeResponsavel;
             amigos.telefone = telefone;
+            amigos.telefoneFormatado = telefoneFormatado;
             amigos.endereco = endereco;
             listaAmigos.Add(amigos);
         }
@@ -102,13 +102,13 @@ namespace ClubeDaLeitura.ModuloAmigos
             Console.ForegroundColor = ConsoleColor.Magenta;
 
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
-            Console.WriteLine("{0,-5} | {1,-20} | {2,-25} | {3,-11} | {4,-40}", "Id", "Nome", "Nome do Responsável", "Telefone", "Endereço");
+            Console.WriteLine("{0,-5} | {1,-20} | {2,-25} | {3,-14} | {4,-40}", "Id", "Nome", "Nome do Responsável", "Telefone", "Endereço");
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
 
 
             foreach (Amigos a in listaAmigos)
             {
-                Console.WriteLine("{0,-5} | {1,-20} | {2,-25} | {3,-11} | {4,-40}", a.id, a.nome, a.nomeResponsavel, a.telefone, a.endereco);
+                Console.WriteLine("{0,-5} | {1,-20} | {2,-25} | {3,-14} | {4,-40}", a.id, a.nome, a.nomeResponsavel, a.telefoneFormatado, a.endereco);
             }
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
 
@@ -124,21 +124,20 @@ namespace ClubeDaLeitura.ModuloAmigos
                 return;
 
             Console.WriteLine();
-            Console.ResetColor();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write("Insira o ID do(a) amigo(a) que deseja editar: ");
+            Program.MostrarMensagem("Insira o ID do amigo que deseja editar: ", ConsoleColor.Yellow);
             int id = int.Parse(Console.ReadLine());
 
-            Console.Write("Insira o nome do(a) amigo(a): ");
+            Program.MostrarMensagem("Insira o nome do amigo: ", ConsoleColor.Yellow);
             string nome = Console.ReadLine();
 
-            Console.Write("Insira o nome do(a) responsável: ");
+            Program.MostrarMensagem("Insira o nome do responsável: ", ConsoleColor.Yellow);
             string nomeResponsavel = Console.ReadLine();
 
-            Console.Write("Insira o telefone do(a) amigo(a): ");
+            Program.MostrarMensagem("Insira o telefone do amigo: ", ConsoleColor.Yellow);
             double telefone = double.Parse(Console.ReadLine());
+            string telefoneFormatado = Convert.ToInt64(telefone).ToString(@"(00)00000-0000"); //FORMATA O TELEFONE
 
-            Console.Write("Insira o endereço do(a) amigo(a): ");
+            Program.MostrarMensagem("Insira o endereço do amigo: ", ConsoleColor.Yellow);
             string endereco = Console.ReadLine();
 
             Amigos amigos = SelecionarAmigosComId(id);
@@ -146,6 +145,7 @@ namespace ClubeDaLeitura.ModuloAmigos
             amigos.nome = nome;
             amigos.nomeResponsavel = nomeResponsavel;
             amigos.telefone = telefone;
+            amigos.telefoneFormatado = telefoneFormatado;
             amigos.endereco = endereco;
         }
         private static void ExcluirAmigos()
@@ -164,7 +164,8 @@ namespace ClubeDaLeitura.ModuloAmigos
 
             listaAmigos.Remove(amigos);
 
-            Console.WriteLine("Amigo(a) excluído(a)!", Console.ForegroundColor = ConsoleColor.Red);
+            Program.MostrarMensagem("Amigo excluído!", ConsoleColor.Red);
+
             Console.ReadKey();
         }
         public static int EncontrarIdAmigo()
@@ -174,20 +175,18 @@ namespace ClubeDaLeitura.ModuloAmigos
             bool idTemEmprestimo;
             do
             {
-                Console.ResetColor();
-                Console.Write("Insira o Id do(a) amigo(a): ", Console.ForegroundColor = ConsoleColor.Yellow);
-
+                Program.MostrarMensagem("Insira o ID do amigo: ", ConsoleColor.Yellow);
                 idExclusao = Convert.ToInt32(Console.ReadLine());
 
                 idInvalido = SelecionarAmigosComId(idExclusao) == null;
 
                 if (idInvalido)
-                    Console.WriteLine("Id do(a) amigo(a) não encontrado, tente novamente!!", Console.ForegroundColor = ConsoleColor.Red);
+                    Program.MostrarMensagem("ID do amigo não encontrado, tente novamente!!: ", ConsoleColor.Yellow);
 
                 idTemEmprestimo = CadastrarEmprestimos.VerificarEmprestimos(idExclusao) != null; //VERIFICA 1 EMPRÉSTIMO POR AMIGO
 
                 if (idTemEmprestimo)
-                    Console.WriteLine("Este amigo já possuí um empréstimo aberto, tente novamente!!", Console.ForegroundColor = ConsoleColor.Red); //VERIFICA 1 EMPRÉSTIMO POR AMIGO
+                    Program.MostrarMensagem("Este amigo já tem um empréstimo em aberto, tente novamente!!", ConsoleColor.Yellow);
 
             } while (idInvalido || idTemEmprestimo);
 

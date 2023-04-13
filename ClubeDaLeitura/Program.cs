@@ -81,5 +81,10 @@ namespace ClubeDaLeitura
                 return opcao;
             }
         }
+        public static void MostrarMensagem(string mensagem, ConsoleColor cor)
+        {
+            Console.ResetColor();
+            Console.Write(mensagem, Console.ForegroundColor = cor);
+        }
     }
 }
