@@ -206,6 +206,6 @@ namespace ClubeDaLeitura.ModuloAmigos
             }
             return amigos;
         }
-
+        //
     }
 }
