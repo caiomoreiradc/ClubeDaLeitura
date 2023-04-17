@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ClubeDaLeitura.Compartilhado;
+using ClubeDaLeitura.ModuloCaixas;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ClubeDaLeitura.ModuloCaixa
 {
-    internal class CadastrarCaixas
+    internal class TelaCaixas
     {
         private static ArrayList listaCaixas = new ArrayList();
 
@@ -28,7 +30,7 @@ namespace ClubeDaLeitura.ModuloCaixa
             Console.Write("Insira uma opção ou digite 9 PARA VOLTAR: ");
             Console.ResetColor();
 
-            string opcao = Console.ReadLine(); //Função retorna o valor lido na Program 
+            string opcao = Console.ReadLine(); 
 
             return opcao;
         }
@@ -61,20 +63,18 @@ namespace ClubeDaLeitura.ModuloCaixa
         private static void RegistrarCaixa()
         {
             Console.Clear();
-            Program.MostrarMensagem("Insira o ID da caixa: ", ConsoleColor.Yellow);
+            Tela.MostrarMensagem("Insira o ID da caixa: ", ConsoleColor.Yellow);
             int id = int.Parse(Console.ReadLine());
 
-            Program.MostrarMensagem("Insira a cor da caixa: ", ConsoleColor.Yellow);
+            Tela.MostrarMensagem("Insira a cor da caixa: ", ConsoleColor.Yellow);
             string cor = Console.ReadLine();
 
-            Program.MostrarMensagem("Insira a etiqueta da caixa: ", ConsoleColor.Yellow);
+            Tela.MostrarMensagem("Insira a etiqueta da caixa: ", ConsoleColor.Yellow);
             string etiqueta = Console.ReadLine();
 
             Caixas caixas = new Caixas();
-            
-            caixas.id = id;
-            caixas.cor = cor;
-            caixas.etiqueta = etiqueta;
+
+            RepositorioCaixas.Registrar(caixas, id, cor, etiqueta);
             listaCaixas.Add(caixas);
         }
         private static void EditarCaixa()
@@ -85,19 +85,17 @@ namespace ClubeDaLeitura.ModuloCaixa
                 return;
 
             Console.WriteLine();
-            Program.MostrarMensagem("Insira o ID da caixa que deseja editar: ", ConsoleColor.Yellow);
+            Tela.MostrarMensagem("Insira o ID da caixa que deseja editar: ", ConsoleColor.Yellow);
             int id = int.Parse(Console.ReadLine());
 
-            Program.MostrarMensagem("Insira a cor da caixa: ", ConsoleColor.Yellow);
+            Tela.MostrarMensagem("Insira a cor da caixa: ", ConsoleColor.Yellow);
             string cor = Console.ReadLine();
 
-            Program.MostrarMensagem("Insira a etiqueta da caixa: ", ConsoleColor.Yellow);
+            Tela.MostrarMensagem("Insira a etiqueta da caixa: ", ConsoleColor.Yellow);
             string etiqueta = Console.ReadLine();
 
-            Caixas caixas = SelecionarCaixaComId(id);
-            caixas.id = id;
-            caixas.cor = cor;
-            caixas.etiqueta = etiqueta;
+
+            RepositorioCaixas.Editar(id, cor, etiqueta);
         }
         private static void ExcluirCaixa()
         {
@@ -115,7 +113,7 @@ namespace ClubeDaLeitura.ModuloCaixa
 
             listaCaixas.Remove(caixa);
 
-            Program.MostrarMensagem("Caixa excluída!", ConsoleColor.Red);
+            Tela.MostrarMensagem("Caixa excluída!", ConsoleColor.Red);
             Console.ReadKey();
         }
         public static int EncontrarIdCaixa()
@@ -125,12 +123,12 @@ namespace ClubeDaLeitura.ModuloCaixa
 
             do
             {
-                Program.MostrarMensagem("Insira o ID da caixa: ", ConsoleColor.Yellow);
+                Tela.MostrarMensagem("Insira o ID da caixa: ", ConsoleColor.Yellow);
                 idExclusao = Convert.ToInt32(Console.ReadLine());
                 idInvalido = SelecionarCaixaComId(idExclusao) == null;
 
                 if (idInvalido)
-                    Program.MostrarMensagem("ID da caixa não encontrado, tente novamente!", ConsoleColor.Red);
+                    Tela.MostrarMensagem("ID da caixa não encontrado, tente novamente!", ConsoleColor.Red);
 
             } while (idInvalido);
 
@@ -162,7 +160,7 @@ namespace ClubeDaLeitura.ModuloCaixa
 
             return true;
         }
-        private static Caixas SelecionarCaixaComId(int id)
+        public static Caixas SelecionarCaixaComId(int id)
         {
             Caixas caixas = null;
 

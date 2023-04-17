@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ClubeDaLeitura.ModuloRevistas
 {
-    internal class CadastrarRevistas
+    internal class TelaRevistas
     {
         private static ArrayList listaRevistas = new ArrayList();
 
@@ -77,15 +77,11 @@ namespace ClubeDaLeitura.ModuloRevistas
             Console.Write("Insira o ano da revista: ");
             int ano = int.Parse(Console.ReadLine());
 
-            int caixaId = CadastrarCaixas.EncontrarIdCaixa(); //VERIFICA SE A CAIXA EXISTE
+            int caixaId = TelaCaixas.EncontrarIdCaixa(); //VERIFICA SE A CAIXA EXISTE
 
             Revistas revistas = new Revistas();
 
-            revistas.id = id;
-            revistas.nome = nome;
-            revistas.numero = numero;
-            revistas.ano = ano;
-            revistas.caixaId = caixaId;
+            RepositorioRevistas.Registrar(revistas, id, nome, numero, ano, caixaId);
             listaRevistas.Add(revistas);
         }
         private static bool VisualizarRevistas(bool existemRevistas)
@@ -137,14 +133,10 @@ namespace ClubeDaLeitura.ModuloRevistas
             int ano = int.Parse(Console.ReadLine());
 
             Console.Write("Insira em qual caixa esta a revista: ");
-            int caixaId = int.Parse(Console.ReadLine()); 
+            int caixaId = int.Parse(Console.ReadLine());
 
-            Revistas revistas = SelecionarRevistasComId(id);
-            revistas.id = id;
-            revistas.nome = nome;
-            revistas.numero = numero;
-            revistas.ano = ano;
-            revistas.caixaId = caixaId;
+
+            RepositorioRevistas.Editar(id, nome, numero, ano, caixaId);
         }
         private static void ExcluirRevistas()
         {
@@ -208,7 +200,7 @@ namespace ClubeDaLeitura.ModuloRevistas
 
             return idExclusao;
         }
-        private static Revistas SelecionarRevistasComId(int id)
+        public static Revistas SelecionarRevistasComId(int id)
         {
             Revistas revistas = null;
 

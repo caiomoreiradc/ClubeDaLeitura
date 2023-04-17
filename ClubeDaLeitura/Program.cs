@@ -19,42 +19,42 @@ namespace ClubeDaLeitura
                 if (opcao == "1")
                 {
                     Console.Title = "Cadastro de Caixas";
-                    string opcaoCadastroCaixas = CadastrarCaixas.PainelCaixas(); 
+                    string opcaoCadastroCaixas = TelaCaixas.PainelCaixas(); 
 
                     if (opcaoCadastroCaixas == "9")
                         continue;
 
-                    CadastrarCaixas.CadastroCaixas(opcaoCadastroCaixas);
+                    TelaCaixas.CadastroCaixas(opcaoCadastroCaixas);
                 }
                 else if (opcao == "2")
                 {
                     Console.Title = "Cadastro de Amigos";
-                    string opcaoCadastroAmigos = CadastrarAmigos.PainelAmigos(); 
+                    string opcaoCadastroAmigos = TelaAmigos.PainelAmigos(); 
 
                     if (opcaoCadastroAmigos == "9")
                         continue;
 
-                    CadastrarAmigos.CadastroAmigos(opcaoCadastroAmigos);
+                    TelaAmigos.CadastroAmigos(opcaoCadastroAmigos);
                 }                
                 else if (opcao == "3")
                 {
                     Console.Title = "Cadastro de Revistas";
-                    string opcaoCadastroRevistas = CadastrarRevistas.PainelRevistas(); 
+                    string opcaoCadastroRevistas = TelaRevistas.PainelRevistas(); 
 
                     if (opcaoCadastroRevistas == "9")
                         continue;
 
-                    CadastrarRevistas.CadastroRevistas(opcaoCadastroRevistas);
+                    TelaRevistas.CadastroRevistas(opcaoCadastroRevistas);
                 }                
                 else if (opcao == "4")
                 {
                     Console.Title = "Cadastro de Empréstimos";
-                    string opcaoCadastroEmprestimos = CadastrarEmprestimos.PainelEmprestimos(); 
+                    string opcaoCadastroEmprestimos = TelaEmprestimos.PainelEmprestimos(); 
 
                     if (opcaoCadastroEmprestimos == "9")
                         continue;
 
-                    CadastrarEmprestimos.CadastroEmprestimos(opcaoCadastroEmprestimos);
+                    TelaEmprestimos.CadastroEmprestimos(opcaoCadastroEmprestimos);
                 }
             }
 
@@ -81,10 +81,6 @@ namespace ClubeDaLeitura
                 return opcao;
             }
         }
-        public static void MostrarMensagem(string mensagem, ConsoleColor cor)
-        {
-            Console.ResetColor();
-            Console.Write(mensagem, Console.ForegroundColor = cor);
-        }
+
     }
 }

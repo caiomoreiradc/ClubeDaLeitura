@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClubeDaLeitura.ModuloRevistas;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,5 +19,7 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
         public int dia;
         public int mes;
         public int ano;
+
+        public Revistas revistas;
     }
 }
