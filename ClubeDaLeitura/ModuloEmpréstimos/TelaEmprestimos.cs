@@ -28,7 +28,6 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
             Console.WriteLine("Digite 2 para Visualizar empréstimos");
             Console.WriteLine("Digite 3 para Editar empréstimos");
             Console.WriteLine("Digite 4 para Finalizar empréstimos");
-            Console.WriteLine("Digite 5 para Visualizar empréstimos de um mês -- NÃO IMPLEMENTADO");
             Console.WriteLine("============================================");
             Console.WriteLine();
             Console.Write("Insira uma opção ou digite 9 PARA VOLTAR: ");
@@ -63,11 +62,6 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
                 Console.Title = "Finalização de Empréstimos";
                 ExcluirEmprestimos();
             }            
-            else if (opcaoCadastroEmprestimos == "5")
-            {
-                Console.Title = "Lista de Empréstimos";
-                //EncontrarPorMes();
-            }
         }
         public static void RegistrarEmprestimos()
         {
