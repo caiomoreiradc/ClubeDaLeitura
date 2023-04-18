@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ClubeDaLeitura.ModuloAmigos;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,33 +8,37 @@ using System.Threading.Tasks;
 
 namespace ClubeDaLeitura.ModuloEmpréstimos
 {
-    internal class RepositorioEmprestimos
+    public class RepositorioEmprestimos
     {
-        internal static void Editar(int id, string? amigoEmprestou, string? revistaEmprestada, int dia, int mes, int ano, DateTime dataEmprestimo, string dataDevolucao)
+        public ArrayList listaEmprestimos = new ArrayList();
+
+        public void Registrar(Emprestimos emprestimos)
         {
-            Emprestimos emprestimos = TelaEmprestimos.SelecionarEmprestimosComId(id);
-            emprestimos.id = id;
+            listaEmprestimos.Add(emprestimos);
+        }
+        public void Editar(Emprestimos emprestimos, string? amigoEmprestou, string? revistaEmprestada, string dataEmprestimo, string dataDevolucao)
+        {
             emprestimos.amigoEmprestou = amigoEmprestou;
             emprestimos.revistaEmprestada = revistaEmprestada;
-            emprestimos.ano = ano;
-            emprestimos.mes = mes;
-            emprestimos.dia = dia;
             emprestimos.dataEmprestimo = dataEmprestimo;
             emprestimos.dataDevolucao = dataDevolucao;
         }
-
-        internal static void Registrar(Emprestimos emprestimos, int id, int idAmigo, string amigoEmprestou, int idRevista, string? revistaEmprestada, int dia, int mes, int ano, DateTime dataEmprestimo, string dataDevolucao)
+        public Emprestimos SelecionarEmprestimosComId(int id)
         {
-            emprestimos.id = id;
-            emprestimos.idAmigo = idAmigo;
-            emprestimos.amigoEmprestou = amigoEmprestou;
-            emprestimos.idRevista = idRevista;
-            emprestimos.revistaEmprestada = revistaEmprestada;
-            emprestimos.ano = ano;
-            emprestimos.mes = mes;
-            emprestimos.dia = dia;
-            emprestimos.dataEmprestimo = dataEmprestimo;
-            emprestimos.dataDevolucao = dataDevolucao;
+            Emprestimos emprestimos = null;
+
+            foreach (var e in listaEmprestimos)
+            {
+                Emprestimos emprestimos2 = e as Emprestimos;
+                if (emprestimos2.id == id)
+                {
+                    emprestimos = emprestimos;
+                    break;
+                }
+            }
+            return emprestimos;
+
+            Amigos amigos = null;
         }
     }
 }

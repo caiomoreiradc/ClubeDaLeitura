@@ -10,11 +10,16 @@ using System.Threading.Tasks;
 
 namespace ClubeDaLeitura.ModuloCaixa
 {
-    internal class TelaCaixas
+    public class TelaCaixas
     {
-        private static ArrayList listaCaixas = new ArrayList();
 
-        public static string PainelCaixas()
+        RepositorioCaixas repositorioCaixas;
+        public TelaCaixas(RepositorioCaixas repositorioCaixas)
+        {
+            this.repositorioCaixas = repositorioCaixas;
+        }
+
+        public string PainelCaixas()
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Magenta;   
@@ -34,7 +39,7 @@ namespace ClubeDaLeitura.ModuloCaixa
 
             return opcao;
         }
-        public static void CadastroCaixas(string opcaoCadastroDasCaixas)
+        public void CadastroCaixas(string opcaoCadastroDasCaixas)
         {
             if (opcaoCadastroDasCaixas == "1")
             {
@@ -60,11 +65,9 @@ namespace ClubeDaLeitura.ModuloCaixa
                 ExcluirCaixa();
             }
         }
-        private static void RegistrarCaixa()
+        public void RegistrarCaixa()
         {
             Console.Clear();
-            Tela.MostrarMensagem("Insira o ID da caixa: ", ConsoleColor.Yellow);
-            int id = int.Parse(Console.ReadLine());
 
             Tela.MostrarMensagem("Insira a cor da caixa: ", ConsoleColor.Yellow);
             string cor = Console.ReadLine();
@@ -72,12 +75,11 @@ namespace ClubeDaLeitura.ModuloCaixa
             Tela.MostrarMensagem("Insira a etiqueta da caixa: ", ConsoleColor.Yellow);
             string etiqueta = Console.ReadLine();
 
-            Caixas caixas = new Caixas();
+            Caixas caixas = new Caixas(cor, etiqueta);
 
-            RepositorioCaixas.Registrar(caixas, id, cor, etiqueta);
-            listaCaixas.Add(caixas);
+            repositorioCaixas.Registrar(caixas);
         }
-        private static void EditarCaixa()
+        public void EditarCaixa()
         {
             bool existemCaixas = VisualizarCaixas(false);
 
@@ -85,19 +87,25 @@ namespace ClubeDaLeitura.ModuloCaixa
                 return;
 
             Console.WriteLine();
-            Tela.MostrarMensagem("Insira o ID da caixa que deseja editar: ", ConsoleColor.Yellow);
-            int id = int.Parse(Console.ReadLine());
-
-            Tela.MostrarMensagem("Insira a cor da caixa: ", ConsoleColor.Yellow);
-            string cor = Console.ReadLine();
-
-            Tela.MostrarMensagem("Insira a etiqueta da caixa: ", ConsoleColor.Yellow);
-            string etiqueta = Console.ReadLine();
+            Caixas caixaEditar = repositorioCaixas.SelecionarCaixaComId(EncontrarIdCaixa());
 
 
-            RepositorioCaixas.Editar(id, cor, etiqueta);
+            if(caixaEditar == null)
+            {
+                Tela.MostrarMensagem("Caixa não encontrada!", ConsoleColor.Red);
+            }
+            else
+            {
+                Tela.MostrarMensagem("Insira a cor da caixa: ", ConsoleColor.Yellow);
+                string cor2 = Console.ReadLine();
+
+                Tela.MostrarMensagem("Insira a etiqueta da caixa: ", ConsoleColor.Yellow);
+                string etiqueta2 = Console.ReadLine();
+
+                repositorioCaixas.Editar(caixaEditar, cor2, etiqueta2);
+            }
         }
-        private static void ExcluirCaixa()
+        private void ExcluirCaixa()
         {
 
             bool existemCaixas = VisualizarCaixas(false);
@@ -109,35 +117,29 @@ namespace ClubeDaLeitura.ModuloCaixa
 
             int idExclusao = EncontrarIdCaixa();
 
-            Caixas caixa = SelecionarCaixaComId(idExclusao);
-
-            listaCaixas.Remove(caixa);
+            repositorioCaixas.Excluir(idExclusao);
 
             Tela.MostrarMensagem("Caixa excluída!", ConsoleColor.Red);
             Console.ReadKey();
         }
-        public static int EncontrarIdCaixa()
+        public int EncontrarIdCaixa()
         {
-            int idExclusao;
-            bool idInvalido;
+            VisualizarCaixas(true);
+            int id;
 
-            do
+            Tela.MostrarMensagem("Insira o ID da caixa: ", ConsoleColor.Yellow);
+
+            while (!int.TryParse(Console.ReadLine(), out id))
             {
+                Tela.MostrarMensagem("ID da caixa não encontrado, tente novamente!", ConsoleColor.Red);
                 Tela.MostrarMensagem("Insira o ID da caixa: ", ConsoleColor.Yellow);
-                idExclusao = Convert.ToInt32(Console.ReadLine());
-                idInvalido = SelecionarCaixaComId(idExclusao) == null;
-
-                if (idInvalido)
-                    Tela.MostrarMensagem("ID da caixa não encontrado, tente novamente!", ConsoleColor.Red);
-
-            } while (idInvalido);
-
-            return idExclusao;
+            } 
+            return id;
         }
-        private static bool VisualizarCaixas(bool existemCaixas)
+        public bool VisualizarCaixas(bool existemCaixas)
         {
             Console.Clear();
-            if (listaCaixas.Count == 0)
+            if (repositorioCaixas.listaCaixas.Count == 0)
             {
                 Console.WriteLine("Nenhuma caixa cadastrado!", Console.ForegroundColor = ConsoleColor.Red);
                 Console.ReadKey();
@@ -150,7 +152,7 @@ namespace ClubeDaLeitura.ModuloCaixa
             Console.WriteLine("{0,-5} | {1,-15} | {2,-15}", "Id", "Cor", "Etiqueta");
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
 
-            foreach (Caixas c in listaCaixas)
+            foreach (Caixas c in repositorioCaixas.listaCaixas)
             {
                 Console.WriteLine("{0,-5} | {1,-15} | {2,-15}", c.id, c.cor, c.etiqueta);
             }
@@ -160,19 +162,6 @@ namespace ClubeDaLeitura.ModuloCaixa
 
             return true;
         }
-        public static Caixas SelecionarCaixaComId(int id)
-        {
-            Caixas caixas = null;
 
-            foreach (Caixas c in listaCaixas)
-            {
-                if (c.id == id)
-                {
-                    caixas = c;
-                    break;
-                }
-            }
-            return caixas;
-        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ClubeDaLeitura.Compartilhado;
 using ClubeDaLeitura.ModuloAmigos;
 using ClubeDaLeitura.ModuloCaixa;
+using ClubeDaLeitura.ModuloCaixas;
 using ClubeDaLeitura.ModuloRevistas;
 using System;
 using System.Collections;
@@ -13,9 +14,26 @@ using System.Threading.Tasks;
 
 namespace ClubeDaLeitura.ModuloEmpréstimos
 {
-    internal class TelaEmprestimos
+    public class TelaEmprestimos
     {
-        static ArrayList listaEmprestimos = new ArrayList();
+        RepositorioEmprestimos repositorioEmprestimos;
+        RepositorioCaixas repositorioCaixas;
+        RepositorioAmigos repositorioAmigos;
+        RepositorioRevistas repositorioRevistas;
+        TelaCaixas telaCaixas;
+        TelaAmigos telaAmigos;
+        TelaRevistas telaRevistas;
+
+        public TelaEmprestimos(RepositorioEmprestimos repositorioEmprestimos, RepositorioCaixas repositorioCaixas, RepositorioAmigos repositorioAmigos, RepositorioRevistas repositorioRevistas, TelaCaixas telaCaixas, TelaAmigos telaAmigos, TelaRevistas telaRevistas)
+        {
+            this.repositorioEmprestimos = repositorioEmprestimos;
+            this.repositorioCaixas = repositorioCaixas;
+            this.repositorioAmigos = repositorioAmigos;
+            this.repositorioRevistas = repositorioRevistas;
+            this.telaCaixas = telaCaixas;
+            this.telaAmigos = telaAmigos;
+            this.telaRevistas = telaRevistas;
+        }
 
         public static string PainelEmprestimos()
         {
@@ -37,7 +55,7 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
 
             return opcao;
         }
-        public static void CadastroEmprestimos(string opcaoCadastroEmprestimos)
+        public void CadastroEmprestimos(string opcaoCadastroEmprestimos)
         {
             if (opcaoCadastroEmprestimos == "1")
             {
@@ -63,43 +81,28 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
                 ExcluirEmprestimos();
             }            
         }
-        public static void RegistrarEmprestimos()
+        public void RegistrarEmprestimos()
         {
             Console.Clear();
-            Tela.MostrarMensagem("Insira o ID do empréstimo: ", ConsoleColor.Yellow);
-            int id = int.Parse(Console.ReadLine());
 
-            int idAmigo = TelaAmigos.EncontrarIdAmigo();
+            
+            Amigos amigoEmprestou = repositorioAmigos.SelecionarAmigosComId(telaAmigos.EncontrarIdAmigo());
 
-            Tela.MostrarMensagem("Insira o o nome do amigo que emprestou: ", ConsoleColor.Yellow); //AUTOMATIZAR COM FUNÇÃO!!
-            string amigoEmprestou = Console.ReadLine();
+            Revistas revistaEmprestada = repositorioRevistas.SelecionarRevistasComId(telaRevistas.EncontrarIdRevista());
 
-            int idRevista = TelaRevistas.EncontrarIdRevista();
-
-            Tela.MostrarMensagem("Insira o nome da revista emprestada: ", ConsoleColor.Yellow);
-            string revistaEmprestada = Console.ReadLine();
-
-            Tela.MostrarMensagem("Insira o dia em que foi emprestada: ", ConsoleColor.Yellow);
-            int dia = int.Parse(Console.ReadLine());
-
-            Tela.MostrarMensagem("Insira o mês em que foi emprestada: ", ConsoleColor.Yellow);
-            int mes = int.Parse(Console.ReadLine());
-
-            Tela.MostrarMensagem("Insira o ano em que foi emprestada: ", ConsoleColor.Yellow);
-            int ano = int.Parse(Console.ReadLine());
-            DateTime dataEmprestimo = new DateTime(ano, mes, dia);
+            Tela.MostrarMensagem("Insira a data em que foi emprestada: ", ConsoleColor.Yellow);
+            string dataEmprestimo = Convert.ToInt64(Console.ReadLine()).ToString(@"00/00/0000");
 
             string dataDevolucao = VerificarDevolucao();
 
-            Emprestimos emprestimos = new Emprestimos();
+            Emprestimos emprestimos = new Emprestimos(amigoEmprestou, revistaEmprestada, dataEmprestimo, dataDevolucao);
 
-            RepositorioEmprestimos.Registrar(emprestimos, id, idAmigo, amigoEmprestou, idRevista, revistaEmprestada, dia, mes, ano, dataEmprestimo, dataDevolucao);
-            listaEmprestimos.Add(emprestimos);
+            repositorioEmprestimos.Registrar(emprestimos);
         }
-        private static bool VisualizarEmprestimos(bool existemEmprestimos)
+        private bool VisualizarEmprestimos(bool existemEmprestimos)
         {
             Console.Clear();
-            if (listaEmprestimos.Count == 0)
+            if (repositorioEmprestimos.listaEmprestimos.Count == 0)
             {
                 Console.WriteLine("Nenhum empréstimo cadastrado!", Console.ForegroundColor = ConsoleColor.Red);
                 Console.ReadKey();
@@ -112,9 +115,9 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
             Console.WriteLine("{0,-5} | {1,-25} | {2,-20} | {3,-8} | {4,-8}", "Id", "Nome Amigo", "Nome Revista", "Data Empréstimo", "Data Devolução");
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
 
-            foreach (Emprestimos e in listaEmprestimos)
+            foreach (Emprestimos e in repositorioEmprestimos.listaEmprestimos)
             {
-                Console.WriteLine("{0,-5} | {1,-25} | {2,-20} | {3,-8} | {4,-8}", e.id, e.amigoEmprestou, e.revistaEmprestada, e.dataEmprestimo.ToShortDateString(), e.dataDevolucao);
+                Console.WriteLine("{0,-5} | {1,-25} | {2,-20} | {3,-8} | {4,-8}", e.id, e.amigos.nome, e.revistas.nome, e.dataEmprestimo, e.dataDevolucao);
             }
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
 
@@ -123,7 +126,7 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
 
             return true;
         }
-        private static void EditarEmprestimos()
+        private void EditarEmprestimos()
         {
             bool existemEmprestimos = VisualizarEmprestimos(false);
 
@@ -132,7 +135,7 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
 
             Console.WriteLine();
             Console.ResetColor();
-            int id = EncontrarIdEmprestimo();
+            Emprestimos emprestimoEditar = repositorioEmprestimos.SelecionarEmprestimosComId(EncontrarIdEmprestimo());
 
             Tela.MostrarMensagem("Insira o nome do amigo que emprestou: ", ConsoleColor.Yellow);
             string amigoEmprestou = Console.ReadLine();
@@ -140,22 +143,15 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
             Tela.MostrarMensagem("Insira o nome da revista: ", ConsoleColor.Yellow);
             string revistaEmprestada = Console.ReadLine();
 
-            Tela.MostrarMensagem("Insira o dia em que foi emprestada: ", ConsoleColor.Yellow);
-            int dia = int.Parse(Console.ReadLine());
+            Tela.MostrarMensagem("Insira a data de emprestimo: ", ConsoleColor.Yellow);
+            string dataEmprestimo = Convert.ToInt64(Console.ReadLine()).ToString(@"00/00/0000");
 
-            Tela.MostrarMensagem("Insira o mês em que foi emprestada: ", ConsoleColor.Yellow);
-            int mes = int.Parse(Console.ReadLine());
-
-            Tela.MostrarMensagem("Insira o ano em que foi emprestada: ", ConsoleColor.Yellow);
-            int ano = int.Parse(Console.ReadLine());
-
-            DateTime dataEmprestimo = new DateTime(ano, mes, dia);
 
             string dataDevolucao = VerificarDevolucao();
-            RepositorioEmprestimos.Editar(id, amigoEmprestou, revistaEmprestada, dia, mes, ano, dataEmprestimo, dataDevolucao);
+            repositorioEmprestimos.Editar(emprestimoEditar, amigoEmprestou, revistaEmprestada, dataEmprestimo, dataDevolucao);
 
         }
-        private static void ExcluirEmprestimos()
+        private void ExcluirEmprestimos()
         {
 
             bool existemEmprestimos = VisualizarEmprestimos(false);
@@ -167,14 +163,14 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
 
             int idExclusao = EncontrarIdEmprestimo();
 
-            Emprestimos emprestimos = SelecionarEmprestimosComId(idExclusao);
+            Emprestimos emprestimos = repositorioEmprestimos.SelecionarEmprestimosComId(idExclusao);
 
-            listaEmprestimos.Remove(emprestimos);
+            repositorioEmprestimos.listaEmprestimos.Remove(emprestimos);
 
             Tela.MostrarMensagem("Empréstimo deletado!!", ConsoleColor.Red); 
             Console.ReadKey();
         }
-        public static int EncontrarIdEmprestimo()
+        public int EncontrarIdEmprestimo()
         {
             int idEmprestimo;
             bool idInvalido;
@@ -185,7 +181,7 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
 
                 idEmprestimo = Convert.ToInt32(Console.ReadLine());
 
-                idInvalido = SelecionarEmprestimosComId(idEmprestimo) == null;
+                idInvalido = repositorioEmprestimos.SelecionarEmprestimosComId(idEmprestimo) == null;
 
                 if (idInvalido)
                     Tela.MostrarMensagem("ID do empréstimo não encontrado, tente novamente!!", ConsoleColor.Red);
@@ -193,21 +189,7 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
 
             return idEmprestimo;
         }
-        public static Emprestimos SelecionarEmprestimosComId(int id)
-        {
-            Emprestimos emprestimos = null;
-
-            foreach (Emprestimos e in listaEmprestimos)
-            {
-                if (e.id == id)
-                {
-                    emprestimos = e;
-                    break;
-                }
-            }
-            return emprestimos;
-        }
-        private static string VerificarDevolucao()
+        private string VerificarDevolucao()
         {
             string dataDevolucao = "";
             Tela.MostrarMensagem("A revista já foi devolvida (s/n)? ", ConsoleColor.Yellow);
@@ -226,19 +208,6 @@ namespace ClubeDaLeitura.ModuloEmpréstimos
 
             return dataDevolucao;
         }
-        public static Emprestimos VerificarEmprestimos(int id)
-        {
-            Emprestimos emprestimos = null;
 
-            foreach (Emprestimos e in listaEmprestimos)
-            {
-                if (e.idAmigo == id)
-                {
-                    emprestimos = e;
-                    break;
-                }
-            }
-            return emprestimos;
-        }
     }
 }

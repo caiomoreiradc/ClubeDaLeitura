@@ -1,5 +1,7 @@
-﻿using ClubeDaLeitura.ModuloAmigos;
+﻿using ClubeDaLeitura.Compartilhado;
+using ClubeDaLeitura.ModuloAmigos;
 using ClubeDaLeitura.ModuloCaixa;
+using ClubeDaLeitura.ModuloCaixas;
 using ClubeDaLeitura.ModuloEmpréstimos;
 using System;
 using System.Collections;
@@ -10,9 +12,18 @@ using System.Threading.Tasks;
 
 namespace ClubeDaLeitura.ModuloRevistas
 {
-    internal class TelaRevistas
+    public class TelaRevistas
     {
-        private static ArrayList listaRevistas = new ArrayList();
+        RepositorioRevistas repositorioRevistas;
+        RepositorioCaixas repositorioCaixas;
+        TelaCaixas telaCaixas;
+
+        public TelaRevistas(RepositorioRevistas repositorioRevistas, RepositorioCaixas repositorioCaixas, TelaCaixas telaCaixas)
+        {
+            this.repositorioRevistas = repositorioRevistas;
+            this.repositorioCaixas = repositorioCaixas;
+            this.telaCaixas = telaCaixas;
+        }
 
         public static string PainelRevistas()
         {
@@ -34,7 +45,7 @@ namespace ClubeDaLeitura.ModuloRevistas
 
             return opcao;
         }
-        public static void CadastroRevistas(string opcaoCadastroRevistas)
+        public void CadastroRevistas(string opcaoCadastroRevistas)
         {
             if (opcaoCadastroRevistas == "1")
             {
@@ -60,13 +71,11 @@ namespace ClubeDaLeitura.ModuloRevistas
                 ExcluirRevistas();
             }
         }
-        private static void RegistrarRevistas()
+        public void RegistrarRevistas()
         {
             Console.Clear();
             Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write("Insira o ID da revista: ");
-            int id = int.Parse(Console.ReadLine());
 
             Console.Write("Insira o nome da revista: ");
             string nome = Console.ReadLine();
@@ -77,17 +86,23 @@ namespace ClubeDaLeitura.ModuloRevistas
             Console.Write("Insira o ano da revista: ");
             int ano = int.Parse(Console.ReadLine());
 
-            int caixaId = TelaCaixas.EncontrarIdCaixa(); //VERIFICA SE A CAIXA EXISTE
+            Caixas caixaRevista = repositorioCaixas.SelecionarCaixaComId(telaCaixas.EncontrarIdCaixa());
+            if(caixaRevista == null)
+            {
+                Tela.MostrarMensagem("Caixa não encontrada!", ConsoleColor.Red);
+            }
+            else 
+            { 
+                Console.Write("Insira o ID da caixa desejada: ");
+            }
 
-            Revistas revistas = new Revistas();
-
-            RepositorioRevistas.Registrar(revistas, id, nome, numero, ano, caixaId);
-            listaRevistas.Add(revistas);
+            Revistas revistas = new Revistas(nome, numero, ano , caixaRevista);
+            repositorioRevistas.Registrar(revistas);
         }
-        private static bool VisualizarRevistas(bool existemRevistas)
+        public bool VisualizarRevistas(bool existemRevistas)
         {
             Console.Clear();
-            if (listaRevistas.Count == 0)
+            if (repositorioRevistas.listaRevistas.Count == 0)
             {
                 Console.WriteLine("Nenhuma revista cadastrada!", Console.ForegroundColor = ConsoleColor.Red);
                 Console.ReadKey();
@@ -97,13 +112,13 @@ namespace ClubeDaLeitura.ModuloRevistas
             Console.ForegroundColor = ConsoleColor.Magenta;
 
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
-            Console.WriteLine("{0,-4} | {1,-20} | {2,-6} | {3,-4} | {4,-5}", "Id", "Nome", "Número", "Ano", "Id da Caixa");
+            Console.WriteLine("{0,-4} | {1,-20} | {2,-6} | {3,-4} | {4,-5}", "Id", "Nome", "Número", "Ano", "Etiqueta da Caixa");
 
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
 
-            foreach (Revistas r in listaRevistas)
+            foreach (Revistas r in repositorioRevistas.listaRevistas)
             {
-                Console.WriteLine("{0,-4} | {1,-20} | {2,-6} | {3,-4} | {4,-5}", r.id, r.nome, r.numero, r.ano, r.caixaId);
+                Console.WriteLine("{0,-4} | {1,-20} | {2,-6} | {3,-4} | {4,-5}", r.id, r.nome, r.numero, r.ano, r.caixas.etiqueta);
             }
             Console.WriteLine("------------------------------------------------------------------------------------------------------------------------");
 
@@ -111,7 +126,7 @@ namespace ClubeDaLeitura.ModuloRevistas
 
             return true;
         }
-        private static void EditarRevistas()
+        public void EditarRevistas()
         {
             bool existemRevistas = VisualizarRevistas(false);
 
@@ -121,7 +136,8 @@ namespace ClubeDaLeitura.ModuloRevistas
             Console.WriteLine();
             Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            int id = EncontrarIdRevista();
+            Revistas revistaEditar = repositorioRevistas.SelecionarRevistasComId(EncontrarIdRevista());
+
 
             Console.Write("Insira o nome da revista: ");
             string nome = Console.ReadLine();
@@ -132,13 +148,11 @@ namespace ClubeDaLeitura.ModuloRevistas
             Console.Write("Insira o ano da revista: ");
             int ano = int.Parse(Console.ReadLine());
 
-            Console.Write("Insira em qual caixa esta a revista: ");
-            int caixaId = int.Parse(Console.ReadLine());
+            Caixas caixaRevista = repositorioCaixas.SelecionarCaixaComId(telaCaixas.EncontrarIdCaixa());
+            repositorioRevistas.Editar(revistaEditar, nome, numero, ano, caixaRevista);
 
-
-            RepositorioRevistas.Editar(id, nome, numero, ano, caixaId);
         }
-        private static void ExcluirRevistas()
+        private void ExcluirRevistas()
         {
 
             bool existemRevistas = VisualizarRevistas(false);
@@ -150,48 +164,43 @@ namespace ClubeDaLeitura.ModuloRevistas
 
             int idExclusao = EncontrarIdExcluir();
 
-            Revistas revistas = SelecionarRevistasComId(idExclusao);
-
-            listaRevistas.Remove(revistas);
+            repositorioRevistas.Excluir(idExclusao);
 
             Console.WriteLine("Revista excluída!", Console.ForegroundColor = ConsoleColor.Red);
             Console.ReadKey();
         }
-        public static int EncontrarIdRevista()
+        public int EncontrarIdRevista()
         {
-            int idEditar;
+            VisualizarRevistas(true);
+
+            int idEncontrado;
             bool idInvalido;
-            bool idJaEmprestada;
             do
             {
-                Console.ResetColor();
                 Console.Write("Insira o Id da revista: ", Console.ForegroundColor = ConsoleColor.Yellow);
+                idEncontrado = Convert.ToInt32(Console.ReadLine());
 
-                idEditar = Convert.ToInt32(Console.ReadLine());
-
-                idInvalido = SelecionarRevistasComId(idEditar) == null;
+                idInvalido = repositorioRevistas.SelecionarRevistasComId(idEncontrado) == null;
 
                 if (idInvalido)
                     Console.WriteLine("Id da revista não encontrada, tente novamente!!", Console.ForegroundColor =  ConsoleColor.Red);
 
-
-
             } while (idInvalido);
 
-            return idEditar;
+            return idEncontrado;
         }
-        private static int EncontrarIdExcluir()
+        private int EncontrarIdExcluir()
         {
             int idExclusao;
             bool idInvalido;
 
             do
             {
-                Console.Write("Insira o Id da revista que deseja excluir: ");
+                Console.Write("Insira o Id da revista que deseja excluir: ", Console.ForegroundColor = ConsoleColor.Yellow);
 
                 idExclusao = Convert.ToInt32(Console.ReadLine());
 
-                idInvalido = SelecionarRevistasComId(idExclusao) == null;
+                idInvalido = repositorioRevistas.SelecionarRevistasComId(idExclusao) == null;
 
                 if (idInvalido)
                     Console.WriteLine("Id da revista não encontrada, tente novamente!!", ConsoleColor.Red);
@@ -200,19 +209,7 @@ namespace ClubeDaLeitura.ModuloRevistas
 
             return idExclusao;
         }
-        public static Revistas SelecionarRevistasComId(int id)
-        {
-            Revistas revistas = null;
 
-            foreach (Revistas r in listaRevistas)
-            {
-                if (r.id == id)
-                {
-                    revistas = r;
-                    break;
-                }
-            }
-            return revistas;
-        }
+
     }
 }

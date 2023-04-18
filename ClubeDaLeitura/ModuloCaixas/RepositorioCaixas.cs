@@ -8,22 +8,38 @@ using System.Threading.Tasks;
 
 namespace ClubeDaLeitura.ModuloCaixas
 {
-    internal class RepositorioCaixas
+    public class RepositorioCaixas
     {
-        public static ArrayList listaCaixas = new ArrayList();
+        public ArrayList listaCaixas = new ArrayList();
 
-        internal static void Registrar(Caixas caixas, int id, string cor, string etiqueta)
+        public void Registrar(Caixas caixas)
         {
-            caixas.id = id;
-            caixas.cor = cor;
-            caixas.etiqueta = etiqueta; 
+            listaCaixas.Add(caixas);
         }
-        internal static void Editar(int id, string? cor, string? etiqueta)
+        public void Editar(Caixas caixaEditar, string cor, string etiqueta)
         {
-            Caixas caixas = TelaCaixas.SelecionarCaixaComId(id);
-            caixas.id = id;
-            caixas.cor = cor;
-            caixas.etiqueta = etiqueta;
+            caixaEditar.cor = cor;
+            caixaEditar.etiqueta = etiqueta;
+        }
+        public void Excluir(int idSelecionado)
+        {
+            Caixas caixa = SelecionarCaixaComId(idSelecionado);
+
+            listaCaixas.Remove(caixa);
+        }
+        public Caixas SelecionarCaixaComId(int id)
+        {
+            Caixas caixas = null;    
+            foreach (var c in listaCaixas)
+            {
+                Caixas caixas2 = c as Caixas;
+                if (caixas2.id == id)
+                {
+                    caixas = caixas2;
+                    break;
+                }
+            }
+            return caixas;
         }
     }
 }

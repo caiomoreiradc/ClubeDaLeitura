@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClubeDaLeitura.ModuloCaixa;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,26 +8,43 @@ using System.Threading.Tasks;
 
 namespace ClubeDaLeitura.ModuloRevistas
 {
-    internal class RepositorioRevistas
+    public class RepositorioRevistas
     {
-        private static ArrayList listaRevistas = new ArrayList();
+        public ArrayList listaRevistas = new ArrayList();
 
-        internal static void Registrar(Revistas revistas, int id, string? nome, int numero, int ano, int caixaId)
+        public void Registrar(Revistas revistas)
         {
-            revistas.id = id;
-            revistas.nome = nome;
-            revistas.numero = numero;
-            revistas.ano = ano;
-            revistas.caixaId = caixaId;
+            listaRevistas.Add(revistas);
         }
-        internal static void Editar(int id, string? nome, int numero, int ano, int caixaId)
+        internal void Editar(Revistas revistas, string nome, int numero, int ano, Caixas caixas)
         {
-            Revistas revistas = TelaRevistas.SelecionarRevistasComId(id);
-            revistas.id = id;
             revistas.nome = nome;
             revistas.numero = numero;
             revistas.ano = ano;
-            revistas.caixaId = caixaId;
+            revistas.caixas = caixas;
+        }
+
+        public void Excluir(int idSelecionado)
+        {
+            Revistas revistas = SelecionarRevistasComId(idSelecionado);
+
+            listaRevistas.Remove(revistas);
+        }
+
+        public Revistas SelecionarRevistasComId(int id)
+        {
+            Revistas revistas = null;
+
+            foreach (var r in listaRevistas)
+            {
+                Revistas revistas2 = r as Revistas;
+                if (revistas2.id == id)
+                {
+                    revistas = revistas2;
+                    break;
+                }
+            }
+            return revistas;
         }
     }
 }
